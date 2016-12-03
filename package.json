@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jaferreira/nodephantom#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "ejs": "^2.5.3",
     "express": "^4.14.0",
     "node-horseman": "^3.2.0",
     "path": "^0.12.7",
