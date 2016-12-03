@@ -14,12 +14,24 @@ app.get('/', function (req, res) {
 });
 
 app.post('/add', bodyParser.json(), function (req, res) {
+
+
+horseman
+  .open('http://www.abola.pt')
+
+  .count("li")
+  .then(function(numLinks){
+	  console.log("Number of links: " +numLinks);
+    res.json(numLinks);
+	  horseman.close();
+  });
+
     var a = req.body.a;
     var b = req.body.b;
 
     var sum = a + b;
 
-    res.json(sum);
+   
 })
 
 
