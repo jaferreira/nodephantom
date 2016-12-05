@@ -488,8 +488,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
         })
         .then(function (gameData) {
 
-            gameData.url = 'https://www.onlinebettingacademy.com/stats/match/portugal-stats/taca-da-liga/vitoria-setubal/arouca/2369548';
-
             //console.log('string' + JSON.stringify(gameData));
             if (gameData.isError) {
                 //logError('Error on Horseman', gameData.errorInfo);
@@ -583,7 +581,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                 AwayScore: finalScore.split('-')[1]
                             });
                         }
-
                         for (i = 0; i < matches.length - 1; i++) {
                             match = matches[i].querySelectorAll('td');
                             if (match[0].innerText == 'No results')
@@ -824,15 +821,12 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             var fora = precursoHome[i].children[2].innerText;
                             var global = precursoHome[i].children[3].innerText;
 
-
                             homeRoad[i] = {
                                 Desc: precursoHome[i].children[0].innerText,
                                 Home: precursoHome[i].children[1].innerText,
                                 Away: precursoHome[i].children[2].innerText,
                                 Global: precursoHome[i].children[3].innerText
-
                             };
-
                         }
 
                         for (i = 0; i < precursoAway.length; i++) {
@@ -841,15 +835,12 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             var fora = precursoAway[i].children[2].innerText;
                             var global = precursoAway[i].children[3].innerText;
 
-
                             awayRoad[i] = {
                                 Desc: precursoAway[i].children[0].innerText,
                                 Home: precursoAway[i].children[1].innerText,
                                 Away: precursoAway[i].children[2].innerText,
                                 Global: precursoAway[i].children[3].innerText
-
                             };
-
                         }
                         var goalsHome = [];
                         var goalsAway = [];
@@ -1106,7 +1097,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                     var resul = JSON.stringify(result);
 
-                    console.log("Number of links: " + resul);
+                    // console.log("Number of links: " + resul);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(resul);
                     horseman.close();
