@@ -488,6 +488,8 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
         })
         .then(function (gameData) {
 
+            gameData.url = 'https://www.onlinebettingacademy.com/stats/match/portugal-stats/taca-da-liga/vitoria-setubal/arouca/2369548';
+
             //console.log('string' + JSON.stringify(gameData));
             if (gameData.isError) {
                 //logError('Error on Horseman', gameData.errorInfo);
@@ -516,10 +518,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
             horseman
                 .open(gameData.url)
-                // .evaluate(function () {
-                //     $('#click_show_results').click();
-                //     $('#click_show_h2h_all').click();
-                // })
                 .click('#click_show_results')
                 .click('#click_show_h2h_all')
                 .waitForSelector('div#todos_ultimos_resultados.loaded')
@@ -707,7 +705,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             groupClassification: []
                         };
 
-                        if (competition.type == 'CHAMPIONS') {
+                        if (competition.type == 'CHAMPIONS' || competition.type == 'TACA_LIGA') {
                             var competitionHistoryTable = document.querySelectorAll('.comp-history > tbody');
                             var qualifyingGamesInfo = competitionHistoryTable[0].children[1];
                             var qualifyingGamesInfoHome = qualifyingGamesInfo.children[0].querySelectorAll('table');
@@ -794,7 +792,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             var groupHistoryGames = competitionHistoryTable[0].children[3].querySelectorAll('table.comp-hist-round > tbody')[0].children;
                             for (g = 0; g < groupHistoryGames.length; g++) {
 
-
                                 courseOnCompetition.groupGames.push({
                                     Competicion: competition.name,
                                     Date: groupHistoryGames[g].children[1].getAttribute('original-title'),
@@ -806,6 +803,8 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                                     SameHomeTeam: groupHistoryGames[g].children[0].innerText.toLowerCase() == homeTeam.toLowerCase(),
                                     SameAwayTeam: groupHistoryGames[g].children[2].innerText.toLowerCase() == awayTeam.toLowerCase(),
+
+                                    IsFutureGame: groupHistoryGames[g].children[1].innerText.toLowerCase() == 'vs'
                                 });
                             }
                         }
@@ -1540,7 +1539,7 @@ app.post('/add', bodyParser.json(), function (req, res) {
 
 
 app.use(express.static(path.resolve(__dirname, 'public')));
-app.listen(process.env.Port || 8081)
+app.listen(process.env.Port || 80)
 
 // horseman
 //   .open('http://www.abola.pt')
