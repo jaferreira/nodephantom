@@ -538,12 +538,13 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                 continue;
 
                             var date = homeCells[0].innerText;
+                            var comp = homeCells[1].getAttribute('title');
                             var homeTeam_ = homeCells[2].innerText;
                             var awayTeam_ = homeCells[4].innerText;
                             var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;
 
                             homeScores.push({
-                                Competicion: competition.name,
+                                Competicion: comp,
                                 Date: date,
                                 HomeTeam: homeTeam_,
                                 AwayTeam: awayTeam_,
@@ -559,13 +560,13 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                 continue;
 
                             var date = homeCells[0].innerText;
-
+                            var comp = homeCells[1].getAttribute('title');
                             var homeTeam_ = homeCells[2].innerText;
                             var awayTeam_ = homeCells[4].innerText;
                             var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;
 
                             awayScores.push({
-                                Competicion: competition.name,
+                                Competicion: comp,
                                 Date: date,
                                 HomeTeam: homeTeam_,
                                 AwayTeam: awayTeam_,
