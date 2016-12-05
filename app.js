@@ -787,14 +787,15 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                                 courseOnCompetition.groupGames.push({
                                     Competicion: competition.name,
-                                    Date: '',
-
-                                    HomeTeam: groupHistoryGames[r].children[0].innerText,
-                                    AwayTeam: groupHistoryGames[r].children[2].innerText,
-
-                                    Result: groupHistoryGames[r].children[1].innerText,
+                                    Date: groupHistoryGames[g].children[1].getAttribute('original-title'),
+                                    HomeTeam: groupHistoryGames[g].children[0].innerText,
+                                    AwayTeam: groupHistoryGames[g].children[2].innerText,
+                                    Result: groupHistoryGames[g].children[1].innerText,
                                     HomeScore: groupHistoryGames[g].children[1].innerText.split('-')[0],
-                                    AwayScore: groupHistoryGames[g].children[1].innerText.split('-')[1]
+                                    AwayScore: groupHistoryGames[g].children[1].innerText.split('-')[1],
+
+                                    SameHomeTeam: groupHistoryGames[g].children[0].innerText.toLowerCase() == homeTeam.toLowerCase(),
+                                    SameAwayTeam: groupHistoryGames[g].children[2].innerText.toLowerCase() == awayTeam.toLowerCase(),
                                 });
                             }
                         }
