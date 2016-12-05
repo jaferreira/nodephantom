@@ -1413,7 +1413,7 @@ app.post('/add', bodyParser.json(), function (req, res) {
 
 
 app.use(express.static(path.resolve(__dirname, 'public')));
-app.listen(process.env.Port || 8080)
+app.listen(process.env.Port || 80)
 
 // horseman
 //   .open('http://www.abola.pt')
