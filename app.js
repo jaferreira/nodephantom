@@ -570,7 +570,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                 HomeTeam: homeTeam_,
                                 AwayTeam: awayTeam_,
                                 Result: finalScore,
-                                SameHomeTeam: homeTeam_.toLowerCase() == homeTeam.toLowerCase(),
+                                SameAwayTeam: awayTeam_.toLowerCase() == awayTeam.toLowerCase(),
                                 HomeScore: finalScore.split('-')[0],
                                 AwayScore: finalScore.split('-')[1]
                             });
@@ -688,6 +688,120 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                             }
                         }
+
+                        // Course on Competition
+                        var courseOnCompetition = {
+                            group: '',
+                            qualifyingGames: [],
+                            groupGames: [],
+                            groupClassification: []
+                        };
+
+                        if (competition.type == 'CHAMPIONS') {
+                            var competitionHistoryTable = document.querySelectorAll('.comp-history > tbody');
+
+                            var qualifyingGamesInfo = competitionHistoryTable[0].children[1];
+                            var qualifyingGamesInfoHome = qualifyingGamesInfo.children[0].querySelectorAll('table');
+                            var qualifyingGamesInfoAway = qualifyingGamesInfo.children[1].querySelectorAll('table');
+
+                            for (j = 0; j < qualifyingGamesInfoHome.length; j++) {
+
+                                var qualificationGame = {
+                                    round: qualifyingGamesInfoHome[j].querySelectorAll('thead > tr > td')[0].innerText,
+                                    games: []
+                                };
+
+                                var roundGames = qualifyingGamesInfoHome[j].querySelectorAll('tbody > tr');
+                                for (r = 0; r < roundGames.length; r++) {
+                                    if (roundGames[r].children[1].innerText.length == 1)
+                                        break;
+                                    qualificationGame.games.push({
+                                        Competicion: competition.name,
+                                        Date: '',
+                                        HomeTeam: roundGames[r].children[0].innerText,
+                                        AwayTeam: roundGames[r].children[2].innerText,
+                                        Result: roundGames[r].children[1].innerText,
+                                        HomeScore: roundGames[r].children[1].innerText.split('-')[0],
+                                        AwayScore: roundGames[r].children[1].innerText.split('-')[1]
+                                    });
+                                }
+
+                                courseOnCompetition.qualifyingGames.push(qualificationGame);
+                            }
+
+                            for (j = 0; j < qualifyingGamesInfoAway.length; j++) {
+
+                                var qualificationGame = {
+                                    round: qualifyingGamesInfoAway[j].querySelectorAll('thead > tr > td')[0].innerText,
+                                    games: []
+                                };
+
+                                var roundGames = qualifyingGamesInfoAway[j].querySelectorAll('tbody > tr');
+                                for (r = 0; r < roundGames.length; r++) {
+                                    if (roundGames[r].children[1].innerText.length == 1)
+                                        break;
+
+                                    qualificationGame.games.push({
+                                        Competicion: competition.name,
+                                        Date: '',
+                                        HomeTeam: roundGames[r].children[0].innerText,
+                                        AwayTeam: roundGames[r].children[2].innerText,
+                                        Result: roundGames[r].children[1].innerText,
+                                        HomeScore: roundGames[r].children[1].innerText.split('-')[0],
+                                        AwayScore: roundGames[r].children[1].innerText.split('-')[1]
+                                    });
+                                }
+
+                                courseOnCompetition.qualifyingGames.push(qualificationGame);
+                            }
+
+                            var groupClassification = competitionHistoryTable[0].children[3].querySelectorAll('table.competition-class > tbody')[0].children;
+                            for (g = 0; g < groupClassification.length; g++) {
+                                
+                                var futureClass = groupClassification[g].getAttribute('class');
+                                var state = '';
+
+                                if (futureClass == 'zone-nr')
+                                    state = 'Next Round';
+                                else if (futureClass == 'zone-el')
+                                    state = 'Europa League';
+
+                                courseOnCompetition.groupClassification.push({
+                                    position: groupClassification[g].children[0].innerText,
+                                    state: state,
+                                    team: groupClassification[g].children[2].innerText,
+                                    points: groupClassification[g].children[3].innerText,
+                                    games: groupClassification[g].children[4].innerText,
+                                    wins: groupClassification[g].children[5].innerText,
+                                    draws: groupClassification[g].children[6].innerText,
+                                    losses: groupClassification[g].children[7].innerText,
+                                    goalScore: groupClassification[g].children[8].innerText,
+                                    goalConceded: groupClassification[g].children[9].innerText,
+                                    goalDiff: groupClassification[g].children[10].innerText,
+                                });
+                            }
+
+                            var groupHistoryGames = competitionHistoryTable[0].children[3].querySelectorAll('table.comp-hist-round > tbody')[0].children;
+                            for (g = 0; g < groupHistoryGames.length; g++) {
+
+
+                                courseOnCompetition.groupGames.push({
+                                    Competicion: competition.name,
+                                    Date: '',
+
+                                    HomeTeam: groupHistoryGames[r].children[0].innerText,
+                                    AwayTeam: groupHistoryGames[r].children[2].innerText,
+
+                                    Result: groupHistoryGames[r].children[1].innerText,
+                                    HomeScore: groupHistoryGames[g].children[1].innerText.split('-')[0],
+                                    AwayScore: groupHistoryGames[g].children[1].innerText.split('-')[1]
+                                });
+                            }
+
+
+                        }
+
+
                         steps += '  -> classifications done';
 
                         var homeRoad = [];
@@ -976,7 +1090,8 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             HomePeriodGoals: homePeriodGoals,
                             AwayPeriodGoals: awayPeriodGoals,
                             HomeResultsHome: homeResultsHome,
-                            AwayResultsAway: awayResultsAway
+                            AwayResultsAway: awayResultsAway,
+                            CompetitionPath: courseOnCompetition
                         };
                     } catch (err) { return steps; }
                 }, gameInfo)
