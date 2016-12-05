@@ -699,7 +699,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                         if (competition.type == 'CHAMPIONS') {
                             var competitionHistoryTable = document.querySelectorAll('.comp-history > tbody');
-
                             var qualifyingGamesInfo = competitionHistoryTable[0].children[1];
                             var qualifyingGamesInfoHome = qualifyingGamesInfo.children[0].querySelectorAll('table');
                             var qualifyingGamesInfoAway = qualifyingGamesInfo.children[1].querySelectorAll('table');
@@ -755,9 +754,10 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                 courseOnCompetition.qualifyingGames.push(qualificationGame);
                             }
 
+                            courseOnCompetition.group = competitionHistoryTable[0].children[2].innerText.trim();
                             var groupClassification = competitionHistoryTable[0].children[3].querySelectorAll('table.competition-class > tbody')[0].children;
                             for (g = 0; g < groupClassification.length; g++) {
-                                
+
                                 var futureClass = groupClassification[g].getAttribute('class');
                                 var state = '';
 
@@ -797,12 +797,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                     AwayScore: groupHistoryGames[g].children[1].innerText.split('-')[1]
                                 });
                             }
-
-
                         }
-
-
-                        steps += '  -> classifications done';
 
                         var homeRoad = [];
                         var awayRoad = [];
