@@ -516,8 +516,14 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
             horseman
                 .open(gameData.url)
+                // .evaluate(function () {
+                //     $('#click_show_results').click();
+                //     $('#click_show_h2h_all').click();
+                // })
                 .click('#click_show_results')
+                .click('#click_show_h2h_all')
                 .waitForSelector('div#todos_ultimos_resultados.loaded')
+                .waitForSelector('div#show_h2h_all.loaded')
                 .evaluate(function (gameInfo) {
                     var competition = gameInfo.competition;
 
@@ -525,7 +531,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
                     var gamesBetweenTeams = [];
-                    var matches = $('table.stat-cd3 > tbody > tr');
+                    var matches = $('#show_h2h_all > table.stat-cd3 > tbody > tr');
 
                     try {
                         var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
