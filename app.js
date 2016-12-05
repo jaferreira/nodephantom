@@ -22,6 +22,7 @@ var COMPETITION_TACA_LIGA = 'TACA_LIGA';
 
 var competitions = [
     { name: 'Primeira Liga 16/17', type: COMPETITION_DEFAULT },
+    { name: 'Primeira Liga 16/17', type: COMPETITION_DEFAULT },
     { name: 'UEFA Champions League 16/17', type: COMPETITION_CHAMPIONS }
 ];
 
@@ -515,6 +516,8 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
             horseman
                 .open(gameData.url)
+                .click('#click_show_results')
+                .waitForSelector('div#todos_ultimos_resultados.loaded')
                 .evaluate(function (gameInfo) {
                     var competition = gameInfo.competition;
 
@@ -525,7 +528,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                     var matches = $('table.stat-cd3 > tbody > tr');
 
                     try {
-                        var scoreTables = document.querySelectorAll('#ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
+                        var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
                         var homeScoresTable = scoreTables[0].querySelectorAll('tbody > tr');
                         var awayScoresTable = scoreTables[1].querySelectorAll('tbody > tr');
 
