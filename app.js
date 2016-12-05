@@ -516,6 +516,8 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
             horseman
                 .open(gameData.url)
                 .evaluate(function (gameInfo) {
+                    var competition = gameInfo.competition;
+
                     var steps = '0';
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
@@ -534,16 +536,16 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             var homeCells = homeScoresTable[i].querySelectorAll('td');
                             if (homeCells.length < 5)
                                 continue;
-                            
+
                             var date = homeCells[0].innerText;
-                            var homeTeam = homeCells[2].innerText;
-                            var awayTeam = homeCells[4].innerText;
-                            var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;                            
+                            var homeTeam_ = homeCells[2].innerText;
+                            var awayTeam_ = homeCells[4].innerText;
+                            var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;
 
                             homeScores.push({
                                 date: date,
-                                homeTeam: homeTeam,
-                                awayTeam: awayTeam,
+                                homeTeam: homeTeam_,
+                                awayTeam: awayTeam_,
                                 score: finalScore
                             });
                         }
@@ -554,17 +556,19 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                             var date = homeCells[0].innerText;
 
-                            var homeTeam = homeCells[2].innerText;
-                            var awayTeam = homeCells[4].innerText;
+                            var homeTeam_ = homeCells[2].innerText;
+                            var awayTeam_ = homeCells[4].innerText;
                             var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;
 
                             awayScores.push({
                                 date: date,
-                                homeTeam: homeTeam,
-                                awayTeam: awayTeam,
+                                homeTeam: homeTeam_,
+                                awayTeam: awayTeam_,
                                 score: finalScore
                             });
                         }
+
+                        steps += '_scores done';
 
                         for (i = 0; i < matches.length - 1; i++) {
                             match = matches[i].querySelectorAll('td');
@@ -584,105 +588,106 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             };
                         }
 
-                        steps += '_1';
-                        var classificationstable = $('.competition-rounds');
-
-                        var total = classificationstable[0].querySelectorAll('tbody')[0].children;
-                        var casa = classificationstable[1].querySelectorAll('tbody')[0].children;
-                        var fora = classificationstable[2].querySelectorAll('tbody')[0].children;
+                        steps += '  -> matches done';
 
                         var generalTable = [];
+                        
+                        if (competition.type == 'DEFAULT') {
+                            var classificationstable = $('.competition-rounds');
 
-                        for (i = 0; i < total.length; i++) {
-                            var gameData = total[i].children;
-                            var order = gameData[0].innerText.trim();
-                            var team = gameData[1].innerText.trim();
-                            var P = gameData[2].innerText.trim();
-                            var J = gameData[3].innerText.trim();
-                            var V = gameData[4].innerText.trim();
-                            var E = gameData[5].innerText.trim();
-                            var D = gameData[6].innerText.trim();
-                            var goals = gameData[7].innerText.trim();
+                            var total = classificationstable[0].querySelectorAll('tbody')[0].children;
+                            var casa = classificationstable[1].querySelectorAll('tbody')[0].children;
+                            var fora = classificationstable[2].querySelectorAll('tbody')[0].children;
 
-
-                            generalTable[i] = {
-                                Order: order,
-                                Team: team,
-                                Points: P,
-                                Games: J,
-                                Vitories: V,
-                                Draws: E,
-                                Defeats: D,
-                                Goals: goals,
-                                IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
-                                IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
-                            };
+                            for (i = 0; i < total.length; i++) {
+                                var gameData = total[i].children;
+                                var order = gameData[0].innerText.trim();
+                                var team = gameData[1].innerText.trim();
+                                var P = gameData[2].innerText.trim();
+                                var J = gameData[3].innerText.trim();
+                                var V = gameData[4].innerText.trim();
+                                var E = gameData[5].innerText.trim();
+                                var D = gameData[6].innerText.trim();
+                                var goals = gameData[7].innerText.trim();
 
 
+                                generalTable[i] = {
+                                    Order: order,
+                                    Team: team,
+                                    Points: P,
+                                    Games: J,
+                                    Vitories: V,
+                                    Draws: E,
+                                    Defeats: D,
+                                    Goals: goals,
+                                    IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
+                                    IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
+                                };
+
+
+                            }
+
+                            var homeTable = [];
+                            for (i = 0; i < total.length; i++) {
+                                var gameData = casa[i].children;
+
+                                var order = gameData[0].innerText;
+                                var team = gameData[1].innerText;
+                                var P = gameData[2].innerText;
+                                var J = gameData[3].innerText;
+                                var V = gameData[4].innerText;
+                                var E = gameData[5].innerText;
+                                var D = gameData[6].innerText;
+                                var goals = gameData[7].innerText;
+
+                                homeTable[i] = {
+                                    Order: order,
+                                    Team: team,
+                                    Points: P,
+                                    Games: J,
+                                    Vitories: V,
+                                    Draws: E,
+                                    Defeats: D,
+                                    Goals: goals,
+                                    IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
+                                    IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
+                                };
+
+
+
+                            }
+
+
+                            var awayTable = [];
+                            for (i = 0; i < total.length; i++) {
+                                var gameData = fora[i].children;
+
+                                var order = gameData[0].innerText;
+                                var team = gameData[1].innerText;
+                                var P = gameData[2].innerText;
+                                var J = gameData[3].innerText;
+                                var V = gameData[4].innerText;
+                                var E = gameData[5].innerText;
+                                var D = gameData[6].innerText;
+                                var goals = gameData[7].innerText;
+
+                                awayTable[i] = {
+                                    Order: order,
+                                    Team: team,
+                                    Points: P,
+                                    Games: J,
+                                    Vitories: V,
+                                    Draws: E,
+                                    Defeats: D,
+                                    Goals: goals,
+                                    IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
+                                    IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
+                                };
+
+
+                            }                            
                         }
-
-                        var homeTable = [];
-                        for (i = 0; i < total.length; i++) {
-                            var gameData = casa[i].children;
-
-                            var order = gameData[0].innerText;
-                            var team = gameData[1].innerText;
-                            var P = gameData[2].innerText;
-                            var J = gameData[3].innerText;
-                            var V = gameData[4].innerText;
-                            var E = gameData[5].innerText;
-                            var D = gameData[6].innerText;
-                            var goals = gameData[7].innerText;
-
-                            homeTable[i] = {
-                                Order: order,
-                                Team: team,
-                                Points: P,
-                                Games: J,
-                                Vitories: V,
-                                Draws: E,
-                                Defeats: D,
-                                Goals: goals,
-                                IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
-                                IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
-                            };
-
-
-
-                        }
-
-
-                        var awayTable = [];
-                        for (i = 0; i < total.length; i++) {
-                            var gameData = fora[i].children;
-
-                            var order = gameData[0].innerText;
-                            var team = gameData[1].innerText;
-                            var P = gameData[2].innerText;
-                            var J = gameData[3].innerText;
-                            var V = gameData[4].innerText;
-                            var E = gameData[5].innerText;
-                            var D = gameData[6].innerText;
-                            var goals = gameData[7].innerText;
-
-                            awayTable[i] = {
-                                Order: order,
-                                Team: team,
-                                Points: P,
-                                Games: J,
-                                Vitories: V,
-                                Draws: E,
-                                Defeats: D,
-                                Goals: goals,
-                                IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
-                                IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
-                            };
-
-
-                        }
-
-
-                        steps += '_2';
+                        steps += '  -> classifications done';
 
                         var homeRoad = [];
                         var awayRoad = [];
@@ -889,7 +894,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                         }
 
-
                         var resultadoTr = $('span.stats-title.course')[2].parentElement.parentElement.parentElement.children[1];
 
                         var resultadosHome = resultadoTr.children[0];
@@ -955,6 +959,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                         }
 
                         return {
+                            Competition: competition,
                             HomeTeam: homeTeam.trim(),
                             AwayTeam: awayTeam.trim(),
                             HomeScores: homeScores,
