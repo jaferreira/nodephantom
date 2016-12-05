@@ -543,10 +543,14 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;
 
                             homeScores.push({
-                                date: date,
-                                homeTeam: homeTeam_,
-                                awayTeam: awayTeam_,
-                                score: finalScore
+                                Competicion: competition.name,
+                                Date: date,
+                                HomeTeam: homeTeam_,
+                                AwayTeam: awayTeam_,
+                                Result: finalScore,
+                                SameHomeTeam: homeTeam_.toLowerCase() == homeTeam.toLowerCase(),
+                                HomeScore: finalScore.split('-')[0],
+                                AwayScore: finalScore.split('-')[1]
                             });
                         }
                         for (i = 0; i < awayScoresTable.length; i++) {
@@ -561,14 +565,16 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             var finalScore = homeCells[3].querySelectorAll('a')[0].innerText;
 
                             awayScores.push({
-                                date: date,
-                                homeTeam: homeTeam_,
-                                awayTeam: awayTeam_,
-                                score: finalScore
+                                Competicion: competition.name,
+                                Date: date,
+                                HomeTeam: homeTeam_,
+                                AwayTeam: awayTeam_,
+                                Result: finalScore,
+                                SameHomeTeam: homeTeam_.toLowerCase() == homeTeam.toLowerCase(),
+                                HomeScore: finalScore.split('-')[0],
+                                AwayScore: finalScore.split('-')[1]
                             });
                         }
-
-                        steps += '_scores done';
 
                         for (i = 0; i < matches.length - 1; i++) {
                             match = matches[i].querySelectorAll('td');
@@ -588,10 +594,10 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                             };
                         }
 
-                        steps += '  -> matches done';
-
                         var generalTable = [];
-                        
+                        var homeTable = [];
+                        var awayTable = [];
+
                         if (competition.type == 'DEFAULT') {
                             var classificationstable = $('.competition-rounds');
 
@@ -623,11 +629,8 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                     IsHomeTeam: team.toLowerCase() == homeTeam.toLowerCase(),
                                     IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
                                 };
-
-
                             }
 
-                            var homeTable = [];
                             for (i = 0; i < total.length; i++) {
                                 var gameData = casa[i].children;
 
@@ -657,8 +660,6 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
 
                             }
 
-
-                            var awayTable = [];
                             for (i = 0; i < total.length; i++) {
                                 var gameData = fora[i].children;
 
@@ -685,7 +686,7 @@ app.get('/v1/scrap/pt/:team', function (req, res) {
                                 };
 
 
-                            }                            
+                            }
                         }
                         steps += '  -> classifications done';
 
