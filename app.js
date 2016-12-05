@@ -4,7 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser')
 var _url = require("url");
 var app = express();
-var scraper = require("./scrapper.js");
+
 
 var gameUrlsToScrap = [];
 var ptTeams = [
