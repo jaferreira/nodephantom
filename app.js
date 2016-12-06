@@ -11,8 +11,8 @@ var gameUrlsToScrap = [];
 function getTeamByName(name) {
     var ptTeams = [
         { name: 'porto', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/porto/1678' },
-        { name: 'benfica', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/benfica/1679' },
-        { name: 'sporting', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/sporting-cp/1680' },
+        { name: 'Benfica', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/benfica/1679' },
+        { name: 'Sporting CP', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/sporting-cp/1680' },
         { name: 'braga', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/sporting-braga/1682' },
         { name: 'vitoria', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/vitoria-guimaraes/1689' },
         { name: 'chaves', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/chaves/1704' }
