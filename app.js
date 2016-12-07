@@ -10,13 +10,26 @@ var gameUrlsToScrap = [];
 
 function getTeamByName(name) {
     var ptTeams = [
-        { name: 'porto', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/porto/1678' },
-        { name: 'Benfica', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/benfica/1679' },
-        { name: 'Sporting CP', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/sporting-cp/1680' },
-        { name: 'braga', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/sporting-braga/1682' },
-        { name: 'vitoria', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/vitoria-guimaraes/1689' },
-        { name: 'chaves', url: 'https://www.onlinebettingacademy.com/stats/team/portugal/chaves/1704' }
+        { "name": "Benfica", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/benfica/1679" },
+        { "name": "Sporting CP", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/sporting-cp/1680" },
+        { "name": "Porto", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/porto/1678" },
+        { "name": "Sporting Braga", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/sporting-braga/1682" },
+        { "name": "Vitória Guimarães", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/vitria-guimares/1689" },
+        { "name": "Rio Ave", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/rio-ave/1683" },
+        { "name": "Marítimo", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/martimo/1684" },
+        { "name": "Chaves", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/chaves/1704" },
+        { "name": "Estoril", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/estoril/1695" },
+        { "name": "Belenenses", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/belenenses/1692" },
+        { "name": "Arouca", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/arouca/11611" },
+        { "name": "Paços de Ferreira", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/paos-de-ferreira/1693" },
+        { "name": "Boavista", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/boavista/1685" },
+        { "name": "Vitória Setúbal", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/vitria-setbal/1696" },
+        { "name": "Moreirense", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/moreirense/1687" },
+        { "name": "Feirense", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/feirense/1705" },
+        { "name": "Tondela", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/tondela/11833" },
+        { "name": "Nacional", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/nacional/1681" }
     ];
+
     return ptTeams.filter(function (obj) {
         return obj.name == name;
     });
@@ -92,7 +105,7 @@ app.get('/v1/scrap/games/:league', function (req, res) {
 app.get('/v1/scrap/league/:league', function (req, res) {
     var league = req.params.league;
     var Result = [];
-    
+
     var l = getLeagueByName(league);
 
     var gameUrls = [];
@@ -861,6 +874,10 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                 .evaluate(function (gameInfo) {
                     var competition = gameInfo.competition;
 
+                    var date = $('li.gamehead')[1].innerText.split(' - ');
+                    var matchDate = date[0];
+                    var matchHour = (date.length > 1) ? date[1] : null;
+
                     var steps = '0';
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
@@ -1408,6 +1425,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                         }
 
                         return {
+                            MatchDate: matchDate,
+                            MatchHour: matchHour,
                             Competition: competition,
                             HomeTeam: homeTeam.trim(),
                             AwayTeam: awayTeam.trim(),
