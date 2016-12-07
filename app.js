@@ -8,7 +8,7 @@ var app = express();
 
 var gameUrlsToScrap = [];
 
-function setPtTeamsInDB(){
+function setPtTeamsInDB() {
     var ptTeams = [
         { "name": "Benfica", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/benfica/1679" },
         { "name": "Sporting CP", "url": "https://www.onlinebettingacademy.com/stats/team/portugal/sporting-cp/1680" },
@@ -66,8 +66,8 @@ function getTeamByName(name) {
 
 function getLeagueByName(name) {
     var leagues = [
-        { name: 'PT', url: 'https://www.onlinebettingacademy.com/stats/competition/portugal-stats/63/12613/35881' },
-        { name: 'EN', url: 'https://www.onlinebettingacademy.com/stats/competition/england-stats/8' },
+        { name: 'PT', url: 'https://www.onlinebettingacademy.com/stats/competition/portugal-stats/63/' },
+        { name: 'EN', url: 'https://www.onlinebettingacademy.com/stats/competition/england-stats/8/' },
     ];
 
     return leagues.find(function (elem) {
@@ -901,7 +901,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                 .waitForSelector('div#show_h2h_all.loaded')
                 .evaluate(function (gameInfo) {
                     var competition = gameInfo.competition;
-
+                    var gameFileUrl = $('a#stat2link')[0].href;
                     var date = $('li.gamehead')[1].innerText.split(' - ');
                     var matchDate = date[0];
                     var matchHour = (date.length > 1) ? date[1] : null;
@@ -978,7 +978,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                                 'Result': match[3].innerText,
                                 'SameHomeTeam': match[2].querySelector('a').innerText.trim().toLowerCase() == homeTeam.toLowerCase(),
                                 'HomeScore': match[3].innerText.split('-')[0],
-                                'AwayScore': match[3].innerText.split('-')[1]
+                                'AwayScore': match[3].innerText.split('-')[1],
+                                GamePermLink: match[0].innerText.trim().replace("-","").replace("-","").trim() + '-' + match[2].querySelector('a').innerText + '-' + match[4].innerText
                             };
                         }
 
@@ -1453,6 +1454,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                         }
 
                         return {
+                            GameFileUrl: gameFileUrl,
                             MatchDate: matchDate,
                             MatchHour: matchHour,
                             Competition: competition,
@@ -1477,19 +1479,185 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                     } catch (err) { return steps; }
                 }, gameInfo)
                 .then(function (result) {
-                    // var scrapperFunction = scraper.scrapGame;
-                    // result = scrapperFunction(gameInfo, '');
+                    horseman
+                        // .open(result.GameFileUrl)
+                        .open('https://www.onlinebettingacademy.com/stats/match/portugal-stats/taa-de-portugal/estoril/cova-piedade/2366153/1/live')
+                        .evaluate(function (result) {
+                            result.GameData = {
+                                Events: [],
+                                HomeLineup: [],
+                                AwayLineup: []
+                            };
 
-                    var resul = JSON.stringify(result);
+                            // 1 index based (has title in 0)
+                            var firstHalfSummary = $('table#first-half-summary > tbody > tr');
+                            var secondHalfSummary = $('table#second-half-summary > tbody > tr');
 
-                    // console.log("Number of links: " + resul);
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(resul);
-                    horseman.close();
+                            for (i = 1; i < firstHalfSummary.length; i++) {
+                                var homeEventTime = firstHalfSummary[i].children[0].innerText.trim();
+
+                                var homeEventType = firstHalfSummary[i].children[1].querySelectorAll('img');
+                                if (homeEventType.length > 0)
+                                    homeEventType = homeEventType[0].title.trim();
+
+                                var homeEventPlayer = firstHalfSummary[i].children[2].innerText.trim();
+                                var awayEventTime = firstHalfSummary[i].children[5].innerText.trim();
+                                
+                                var awayEventType = firstHalfSummary[i].children[4].querySelectorAll('img');
+                                if (awayEventType.length > 0)
+                                    awayEventType = awayEventType[0].title.trim();
+
+                                
+                                var awayEventPlayer = firstHalfSummary[i].children[3].innerText.trim();
+                            }
+
+                            for (i = 1; i < secondHalfSummary.length; i++) {
+                                var homeEventTime = secondHalfSummary[i].children[0].innerText.trim();
+
+                                var homeEventType = secondHalfSummary[i].children[1].querySelectorAll('img');
+                                if (homeEventType.length > 0)
+                                    homeEventType = homeEventType[0].title.trim();
+
+                                var homeEventPlayer = secondHalfSummary[i].children[2].innerText.trim();
+                                var awayEventTime = secondHalfSummary[i].children[5].innerText.trim();
+
+                                var awayEventType = secondHalfSummary[i].children[4].querySelectorAll('img');
+                                if (awayEventType.length > 0)
+                                    awayEventType = awayEventType[0].title.trim();
+
+                                var awayEventPlayer = secondHalfSummary[i].children[3].innerText.trim();
+
+                                result.GameData.Events.push({
+                                    TimeOfGame: 'Second-Half',
+                                    Time: (homeEventTime) ? homeEventTime : awayEventTime,
+                                    Type: (homeEventType) ? homeEventType : awayEventType,
+                                    Player: (homeEventPlayer) ? homeEventPlayer : awayEventPlayer
+                                });
+                            }
+
+
+
+
+
+                            var homeTeamLineup = $('table#team-lineups > tbody > tr > td > table > tbody')[0].children;
+                            var awayTeamLineup = $('table#team-lineups > tbody > tr > td > table > tbody')[1].children;
+
+                            for (i = 0; i < homeTeamLineup.length; i++) {
+                                result.GameData.HomeLineup.push({
+                                    Position: homeTeamLineup[i].children[0].innerText,
+                                    Nationality: homeTeamLineup[i].children[1].innerText,
+                                    Number: homeTeamLineup[i].children[2].innerText,
+                                    Name: homeTeamLineup[i].children[3].innerText
+                                });
+                            }
+
+                            for (i = 0; i < awayTeamLineup.length; i++) {
+                                result.GameData.AwayLineup.push({
+                                    Position: awayTeamLineup[i].children[3].innerText,
+                                    Nationality: awayTeamLineup[i].children[2].innerText,
+                                    Number: awayTeamLineup[i].children[1].innerText,
+                                    Name: awayTeamLineup[i].children[0].innerText
+                                });
+                            }
+
+
+                            return result;
+                        }, result)
+                        .then(function (result) {
+                            var resul = JSON.stringify(result);
+
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(resul);
+                            horseman.close();
+                        });
+
                 });
-
         });
 });
+
+
+
+app.get('/v1/scrap/all-league/:url', function (req, res) {
+    var url = req.params.url;
+
+    var horseman = new Horseman();
+    horseman
+        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
+        .open(url)
+        .evaluate(function () {
+            try {
+                var competitionTitle = $('p.competition-title').text();
+                var rows = $('table.competition-rounds > tbody > tr');
+                var leagueData = {
+                    Competition: competitionTitle,
+                    Games: []
+                };
+                for (i = 1; i < rows.length; i++) {
+
+                    var date = rows[i].children[1].innerText;
+                    var home = rows[i].children[2].innerText;
+                    var away = rows[i].children[4].innerText;
+                    var gameUrl = rows[i].children[3].children[0].href;
+
+                    leagueData.Games.push({
+                        Date: date,
+                        HomeTeam: home,
+                        AwayTeam: away,
+                        GameUrl: gameUrl
+                    });
+                }
+
+                return leagueData;
+            }
+            catch (err) {
+                return err;
+            }
+        }).then(function (data) {
+            var result = JSON.stringify(data);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(result);
+            horseman.close();
+        });
+});
+
+
+
+app.get('/v1/scrap/all-seasons/:league', function (req, res) {
+    var leagueName = req.params.league;
+    var l = getLeagueByName(leagueName);
+
+    var horseman = new Horseman();
+    horseman
+        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
+        .open(l.url)
+        .evaluate(function (baseUrl) {
+            try {
+                var rows = $('.chzn-select.select-season.chzn-done > option');
+                var data = { seasons: [] };
+                for (i = 0; i < rows.length; i++) {
+                    data.competition = $('p.competition-title').text();
+                    var name = rows[i].innerText;
+                    var seasonId = rows[i].value
+
+                    data.seasons.push({
+                        Name: name,
+                        Url: baseUrl + seasonId + '/all-games'
+                    });
+                }
+
+                return data;
+            }
+            catch (err) {
+                return err;
+            }
+        }, l.url).then(function (data) {
+            var result = JSON.stringify(data);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(result);
+            horseman.close();
+        });
+});
+
 
 
 
