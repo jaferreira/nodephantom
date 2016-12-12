@@ -844,14 +844,14 @@ app.get('/v1/scrap/team/xpto', function (req, res) {
     horseman
         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
         .open('https://www.academiadasapostas.com/stats/match/portugal-stats/primeira-liga/moreirense/arouca/2284844')
-             .click('#click_show_results')
-                .click('#click_show_h2h_all')
-                .waitForSelector('div#todos_ultimos_resultados.loaded')
-                .waitForSelector('div#show_h2h_all.loaded')
-        .evaluate(function(){
+        .click('#click_show_results')
+        .click('#click_show_h2h_all')
+        .waitForSelector('div#todos_ultimos_resultados.loaded')
+        .waitForSelector('div#show_h2h_all.loaded')
+        .evaluate(function () {
             return $('a#stat2link')[0].href;
         })
-        .then(function(status){
+        .then(function (status) {
             console.log('teasdasdasd');
             console.log(status);
         }).close();
@@ -870,25 +870,28 @@ app.get('/v1/scrap/team/:team', function (req, res) {
     var horseman = new Horseman({
         loadImages: false,
         ignoreSSLErrors: true,
-        timeout: 10000
+        timeout: 10000,
+        bluebirdDebug: true
     });
     horseman
-    .on('error', function (msg, trace) {
-        console.log(msg, trace);
-    }).on('timeout', function (timeout, msg) {
-        console.log('timeout', msg);
-    }).on('resourceTimeout', function (msg) {
-        console.log('resourceTimeout', msg);
-    }).on('resourceError', function (msg) {
-        console.log('resourceError', msg);
-    }).on('loadFinished', function (msg) {
-        console.log('loadFinished', msg);
-    }).on('loadStarted', function (msg) {
-        console.log('loadStarted', msg);
-    }).on('initialized', function(){
-        console.log('initialized');
-    });
-    
+        .on('error', function (msg, trace) {
+            console.log(msg, trace);
+        }).on('timeout', function (timeout, msg) {
+            console.log('timeout', msg);
+        }).on('resourceTimeout', function (msg) {
+            console.log('resourceTimeout', msg);
+        }).on('resourceError', function (msg) {
+            console.log('resourceError', msg);
+        }).on('loadFinished', function (msg) {
+            console.log('loadFinished', msg);
+        }).on('loadStarted', function (msg) {
+            console.log('loadStarted', msg);
+        }).on('initialized', function () {
+            console.log('initialized');
+        }).on('consoleMessage', function (msg) {
+            console.log(msg);
+        });
+
     horseman
         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
         .open(foundTeam[0].url)
@@ -946,7 +949,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
             horseman
                 .open(gameInfo.url)
-                .then(function(status){
+                .then(function (status) {
                     console.log('Open Status: ' + status);
                 })
                 .click('#click_show_results')
