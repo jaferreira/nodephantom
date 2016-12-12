@@ -849,6 +849,7 @@ app.get('/v1/scrap/team/xpto', function (req, res) {
                 .waitForSelector('div#todos_ultimos_resultados.loaded')
                 .waitForSelector('div#show_h2h_all.loaded')
         .then(function(status){
+            console.log('teasdasdasd');
             console.log(status);
         }).close();
 });
