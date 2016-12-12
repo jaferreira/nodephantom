@@ -842,6 +842,21 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
     var horseman = new Horseman();
     horseman
+    .on('error', function (msg, trace) {
+        console.log(msg, trace);
+    }).on('timeout', function (timeout, msg) {
+        console.log('timeout', msg);
+    }).on('resourceTimeout', function (msg) {
+        console.log('resourceTimeout', msg);
+    }).on('resourceError', function (msg) {
+        console.log('resourceError', msg);
+    }).on('loadFinished', function (msg) {
+        console.log('loadFinished', msg);
+    }).on('loadStarted', function (msg) {
+        console.log('loadStarted', msg);
+    });
+    
+    horseman
         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
         .open(foundTeam[0].url)
         .evaluate(function () {
