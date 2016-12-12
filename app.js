@@ -841,6 +841,20 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
     var horseman = new Horseman();
     horseman
+        .on('error', function (msg, trace) {
+            console.log(msg, trace);
+        }).on('timeout', function (timeout, msg) {
+            console.log('[timeout]', msg);
+        }).on('resourceTimeout', function (msg) {
+            console.log('[resourceTimeout]', msg);
+        }).on('resourceError', function (msg) {
+            console.log('[resourceError]', msg);
+        }).on('loadFinished', function (msg) {
+            console.log('[loadFinished]', msg);
+        }).on('loadStarted', function (msg) {
+            console.log('[loadStarted]', msg);
+        });
+    horseman
         .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
         .open(foundTeam[0].url)
         .evaluate(function () {
@@ -869,7 +883,6 @@ app.get('/v1/scrap/team/:team', function (req, res) {
         })
         .then(function (gameData) {
 
-            console.log('string' + JSON.stringify(gameData));
             if (gameData.isError) {
                 //logError('Error on Horseman', gameData.errorInfo);
             }
@@ -897,6 +910,9 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
             horseman
                 .open(gameData.url)
+                .then(function (status) {
+                    console.log('[' + status + '] ' + gameData.url);
+                })
                 .click('#click_show_results')
                 .click('#click_show_h2h_all')
                 .waitForSelector('div#todos_ultimos_resultados.loaded')
@@ -1495,6 +1511,11 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(resul);
+                    horseman.close();
+                })
+                .catch(function (error) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify(error));
                     horseman.close();
                 });
 
