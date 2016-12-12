@@ -913,10 +913,10 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                 .then(function (status) {
                     console.log('[' + status + '] ' + gameData.url);
                 })
-                // .click('#click_show_results')
-                // .click('#click_show_h2h_all')
-                // .waitForSelector('div#todos_ultimos_resultados.loaded')
-                // .waitForSelector('div#show_h2h_all.loaded')
+                .click('#click_show_results')
+                .click('#click_show_h2h_all')
+                .waitForSelector('div#todos_ultimos_resultados.loaded')
+                .waitForSelector('div#show_h2h_all.loaded')
                 .evaluate(function (gameInfo) {
                     var competition = gameInfo.competition;
                     var gameFileUrl = $('a#stat2link')[0].href;
@@ -935,8 +935,8 @@ steps++;
                     var matches = $('#show_h2h_all > table.stat-cd3 > tbody > tr');
 steps++;
                     try {
-                        // var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
-                        var scoreTables = document.querySelectorAll('#ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
+                        var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
+                        // var scoreTables = document.querySelectorAll('#ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
 steps++;
                         var homeScoresTable = scoreTables[0].querySelectorAll('tbody > tr');
                         var awayScoresTable = scoreTables[1].querySelectorAll('tbody > tr');
