@@ -1,4 +1,4 @@
-var path = require('path');
+﻿var path = require('path');
 var Horseman = require("node-horseman");
 var express = require('express');
 var bodyParser = require('body-parser')
@@ -173,6 +173,7 @@ app.get('/v1/scrap/league/:league', function (req, res) {
         });
 
 });
+
 
 
 function NextGame(urls, horse, res, Result) {
@@ -896,7 +897,10 @@ app.get('/v1/scrap/team/:team', function (req, res) {
             console.log(JSON.stringify(gameInfo, null, 2));
 
             horseman
-                .open(gameData.url)
+                .open(gameInfo.url)
+                .then(function(status){
+                    console.log('Open Status: ' + status);
+                })
                 .click('#click_show_results')
                 .click('#click_show_h2h_all')
                 .waitForSelector('div#todos_ultimos_resultados.loaded')
@@ -1677,8 +1681,6 @@ app.get('/v1/scrap/all-seasons/:league', function (req, res) {
             horseman.close();
         });
 });
-
-
 
 
 app.post('/add', bodyParser.json(), function (req, res) {
