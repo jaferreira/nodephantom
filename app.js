@@ -831,6 +831,25 @@ function NextGame(urls, horse, res, Result) {
     }
 }
 
+app.get('/v1/scrap/team/xpto', function (req, res) {
+    var team = req.params.team;
+    console.log(team);
+
+
+    var foundTeam = getTeamByName(team);
+
+    var gameToScrap;
+
+    var horseman = new Horseman();
+    horseman
+        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
+        .open('https://www.academiadasapostas.com/stats/match/portugal-stats/primeira-liga/moreirense/arouca/2284844')
+        .then(function(status){
+            console.log(status);
+        }).close();
+});
+
+
 app.get('/v1/scrap/team/:team', function (req, res) {
     var team = req.params.team;
     console.log(team);
