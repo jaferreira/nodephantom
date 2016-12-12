@@ -907,8 +907,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
             };
 
             console.log(JSON.stringify(gameInfo, null, 2));
-
-            horseman
+            var _horseman = new Horseman();
+            _horseman
                 .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
                 .open(gameData.url)
                 .then(function (status) {
@@ -1519,11 +1519,13 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(resul);
                     horseman.close();
+                    _horseman.close();
                 })
                 .catch(function (error) {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify(error));
-
+                    horseman.close();
+                    _horseman.close();
                 });
 
             // .then(function (result) {
