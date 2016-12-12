@@ -867,7 +867,11 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
     var gameToScrap;
 
-    var horseman = new Horseman();
+    var horseman = new Horseman({
+        loadImages: false,
+        ignoreSSLErrors: true,
+        timeout: 10000
+    });
     horseman
     .on('error', function (msg, trace) {
         console.log(msg, trace);
@@ -881,6 +885,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
         console.log('loadFinished', msg);
     }).on('loadStarted', function (msg) {
         console.log('loadStarted', msg);
+    }).on('initialized', function(){
+        console.log('initialized');
     });
     
     horseman
