@@ -907,8 +907,9 @@ app.get('/v1/scrap/team/:team', function (req, res) {
             };
 
             console.log(JSON.stringify(gameInfo, null, 2));
-            
+
             horseman
+                .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
                 .open(gameData.url)
                 .then(function (status) {
                     console.log('[' + status + '] ' + gameData.url);
@@ -927,20 +928,20 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
 
                     var steps = 0;
-steps++;
+                    steps++;
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
-steps++;
+                    steps++;
                     var gamesBetweenTeams = [];
                     var matches = $('#show_h2h_all > table.stat-cd3 > tbody > tr');
-steps++;
+                    steps++;
                     try {
                         var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
                         // var scoreTables = document.querySelectorAll('#ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
-steps++;
+                        steps++;
                         var homeScoresTable = scoreTables[0].querySelectorAll('tbody > tr');
                         var awayScoresTable = scoreTables[1].querySelectorAll('tbody > tr');
-steps++;
+                        steps++;
                         var homeScores = [];
                         var awayScores = [];
 
@@ -1006,7 +1007,7 @@ steps++;
                                 GamePermLink: match[0].innerText.trim().replace("-", "").replace("-", "").trim() + '-' + match[2].querySelector('a').innerText + '-' + match[4].innerText
                             };
                         }
-steps++;
+                        steps++;
                         var generalTable = [];
                         var homeTable = [];
                         var awayTable = [];
@@ -1522,7 +1523,7 @@ steps++;
                 .catch(function (error) {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify(error));
-                    
+
                 });
 
             // .then(function (result) {
