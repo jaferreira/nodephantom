@@ -907,8 +907,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
             };
 
             console.log(JSON.stringify(gameInfo, null, 2));
-            var _horseman = new Horseman();
-            _horseman
+            
+            horseman
                 .open(gameData.url)
                 .then(function (status) {
                     console.log('[' + status + '] ' + gameData.url);
