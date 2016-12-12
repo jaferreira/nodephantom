@@ -78,11 +78,13 @@ function getLeagueByName(name) {
 var COMPETITION_DEFAULT = 'DEFAULT';
 var COMPETITION_CHAMPIONS = 'CHAMPIONS';
 var COMPETITION_TACA_LIGA = 'TACA_LIGA';
+var COMPETITION_TACA_PT = 'TACA_PT';
 
 var competitions = [
     { name: 'Primeira Liga 16/17', type: COMPETITION_DEFAULT },
     { name: 'Primeira Liga 16/17', type: COMPETITION_DEFAULT },
-    { name: 'UEFA Champions League 16/17', type: COMPETITION_CHAMPIONS }
+    { name: 'UEFA Champions League 16/17', type: COMPETITION_CHAMPIONS },
+    { name: 'Taça de Portugal 16/17', type: COMPETITION_TACA_PT }
 ];
 
 
@@ -867,7 +869,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
         })
         .then(function (gameData) {
 
-            //console.log('string' + JSON.stringify(gameData));
+            console.log('string' + JSON.stringify(gameData));
             if (gameData.isError) {
                 //logError('Error on Horseman', gameData.errorInfo);
             }
@@ -906,7 +908,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                     var matchDate = date[0];
                     var matchHour = (date.length > 1) ? date[1] : null;
 
-                    var steps = '0';
+                    var steps = 0;
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
                     var gamesBetweenTeams = [];
@@ -979,7 +981,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                                 'SameHomeTeam': match[2].querySelector('a').innerText.trim().toLowerCase() == homeTeam.toLowerCase(),
                                 'HomeScore': match[3].innerText.split('-')[0],
                                 'AwayScore': match[3].innerText.split('-')[1],
-                                GamePermLink: match[0].innerText.trim().replace("-","").replace("-","").trim() + '-' + match[2].querySelector('a').innerText + '-' + match[4].innerText
+                                GamePermLink: match[0].innerText.trim().replace("-", "").replace("-", "").trim() + '-' + match[2].querySelector('a').innerText + '-' + match[4].innerText
                             };
                         }
 
@@ -1078,6 +1080,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                             }
                         }
 
+                        steps++;
+
                         // Course on Competition
                         var courseOnCompetition = {
                             group: '',
@@ -1086,7 +1090,8 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                             groupClassification: []
                         };
 
-                        if (competition.type == 'CHAMPIONS' || competition.type == 'TACA_LIGA') {
+                        if (competition.type == 'CHAMPIONS' || competition.type == 'TACA_LIGA' || competition.type == 'TACA_PT') {
+                            steps++;
                             var competitionHistoryTable = document.querySelectorAll('.comp-history > tbody');
                             var qualifyingGamesInfo = competitionHistoryTable[0].children[1];
                             var qualifyingGamesInfoHome = qualifyingGamesInfo.children[0].querySelectorAll('table');
@@ -1116,7 +1121,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
                                 courseOnCompetition.qualifyingGames.push(qualificationGame);
                             }
-
+                            steps++;
                             for (j = 0; j < qualifyingGamesInfoAway.length; j++) {
 
                                 var qualificationGame = {
@@ -1142,54 +1147,61 @@ app.get('/v1/scrap/team/:team', function (req, res) {
 
                                 courseOnCompetition.qualifyingGames.push(qualificationGame);
                             }
+                            steps++;
 
-                            courseOnCompetition.group = competitionHistoryTable[0].children[2].innerText.trim();
-                            var groupClassification = competitionHistoryTable[0].children[3].querySelectorAll('table.competition-class > tbody')[0].children;
-                            for (g = 0; g < groupClassification.length; g++) {
+                            if (competitionHistoryTable[0].children.length > 2) {
 
-                                var futureClass = groupClassification[g].getAttribute('class');
-                                var state = '';
+                                courseOnCompetition.group = competitionHistoryTable[0].children[2].innerText.trim();
+                                var groupClassification = competitionHistoryTable[0].children[3].querySelectorAll('table.competition-class > tbody')[0].children;
+                                for (g = 0; g < groupClassification.length; g++) {
 
-                                if (futureClass == 'zone-nr')
-                                    state = 'Next Round';
-                                else if (futureClass == 'zone-el')
-                                    state = 'Europa League';
+                                    var futureClass = groupClassification[g].getAttribute('class');
+                                    var state = '';
 
-                                courseOnCompetition.groupClassification.push({
-                                    position: groupClassification[g].children[0].innerText,
-                                    state: state,
-                                    team: groupClassification[g].children[2].innerText,
-                                    points: groupClassification[g].children[3].innerText,
-                                    games: groupClassification[g].children[4].innerText,
-                                    wins: groupClassification[g].children[5].innerText,
-                                    draws: groupClassification[g].children[6].innerText,
-                                    losses: groupClassification[g].children[7].innerText,
-                                    goalScore: groupClassification[g].children[8].innerText,
-                                    goalConceded: groupClassification[g].children[9].innerText,
-                                    goalDiff: groupClassification[g].children[10].innerText,
-                                });
+                                    if (futureClass == 'zone-nr')
+                                        state = 'Next Round';
+                                    else if (futureClass == 'zone-el')
+                                        state = 'Europa League';
+
+                                    courseOnCompetition.groupClassification.push({
+                                        position: groupClassification[g].children[0].innerText,
+                                        state: state,
+                                        team: groupClassification[g].children[2].innerText,
+                                        points: groupClassification[g].children[3].innerText,
+                                        games: groupClassification[g].children[4].innerText,
+                                        wins: groupClassification[g].children[5].innerText,
+                                        draws: groupClassification[g].children[6].innerText,
+                                        losses: groupClassification[g].children[7].innerText,
+                                        goalScore: groupClassification[g].children[8].innerText,
+                                        goalConceded: groupClassification[g].children[9].innerText,
+                                        goalDiff: groupClassification[g].children[10].innerText,
+                                    });
+                                }
                             }
+                            steps++;
 
-                            var groupHistoryGames = competitionHistoryTable[0].children[3].querySelectorAll('table.comp-hist-round > tbody')[0].children;
-                            for (g = 0; g < groupHistoryGames.length; g++) {
+                            if (competitionHistoryTable[0].children.length > 3) {
+                                var groupHistoryGames = competitionHistoryTable[0].children[3].querySelectorAll('table.comp-hist-round > tbody')[0].children;
+                                for (g = 0; g < groupHistoryGames.length; g++) {
+                                    courseOnCompetition.groupGames.push({
+                                        Competicion: competition.name,
+                                        Date: groupHistoryGames[g].children[1].getAttribute('original-title'),
+                                        HomeTeam: groupHistoryGames[g].children[0].innerText,
+                                        AwayTeam: groupHistoryGames[g].children[2].innerText,
+                                        Result: groupHistoryGames[g].children[1].innerText,
+                                        HomeScore: groupHistoryGames[g].children[1].innerText.split('-')[0],
+                                        AwayScore: groupHistoryGames[g].children[1].innerText.split('-')[1],
 
-                                courseOnCompetition.groupGames.push({
-                                    Competicion: competition.name,
-                                    Date: groupHistoryGames[g].children[1].getAttribute('original-title'),
-                                    HomeTeam: groupHistoryGames[g].children[0].innerText,
-                                    AwayTeam: groupHistoryGames[g].children[2].innerText,
-                                    Result: groupHistoryGames[g].children[1].innerText,
-                                    HomeScore: groupHistoryGames[g].children[1].innerText.split('-')[0],
-                                    AwayScore: groupHistoryGames[g].children[1].innerText.split('-')[1],
+                                        SameHomeTeam: groupHistoryGames[g].children[0].innerText.toLowerCase() == homeTeam.toLowerCase(),
+                                        SameAwayTeam: groupHistoryGames[g].children[2].innerText.toLowerCase() == awayTeam.toLowerCase(),
 
-                                    SameHomeTeam: groupHistoryGames[g].children[0].innerText.toLowerCase() == homeTeam.toLowerCase(),
-                                    SameAwayTeam: groupHistoryGames[g].children[2].innerText.toLowerCase() == awayTeam.toLowerCase(),
-
-                                    IsFutureGame: groupHistoryGames[g].children[1].innerText.toLowerCase() == 'vs'
-                                });
+                                        IsFutureGame: groupHistoryGames[g].children[1].innerText.toLowerCase() == 'vs'
+                                    });
+                                }
                             }
                         }
 
+                        steps++;
                         var homeRoad = [];
                         var awayRoad = [];
 
@@ -1476,102 +1488,110 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                             AwayResultsAway: awayResultsAway,
                             CompetitionPath: courseOnCompetition
                         };
-                    } catch (err) { return steps; }
+                    } catch (err) { err.steps = steps; return err; }
                 }, gameInfo)
                 .then(function (result) {
-                    horseman
-                        // .open(result.GameFileUrl)
-                        .open('https://www.onlinebettingacademy.com/stats/match/portugal-stats/taa-de-portugal/estoril/cova-piedade/2366153/1/live')
-                        .evaluate(function (result) {
-                            result.GameData = {
-                                Events: [],
-                                HomeLineup: [],
-                                AwayLineup: []
-                            };
+                    var resul = JSON.stringify(result);
 
-                            // 1 index based (has title in 0)
-                            var firstHalfSummary = $('table#first-half-summary > tbody > tr');
-                            var secondHalfSummary = $('table#second-half-summary > tbody > tr');
-
-                            for (i = 1; i < firstHalfSummary.length; i++) {
-                                var homeEventTime = firstHalfSummary[i].children[0].innerText.trim();
-
-                                var homeEventType = firstHalfSummary[i].children[1].querySelectorAll('img');
-                                if (homeEventType.length > 0)
-                                    homeEventType = homeEventType[0].title.trim();
-
-                                var homeEventPlayer = firstHalfSummary[i].children[2].innerText.trim();
-                                var awayEventTime = firstHalfSummary[i].children[5].innerText.trim();
-                                
-                                var awayEventType = firstHalfSummary[i].children[4].querySelectorAll('img');
-                                if (awayEventType.length > 0)
-                                    awayEventType = awayEventType[0].title.trim();
-
-                                
-                                var awayEventPlayer = firstHalfSummary[i].children[3].innerText.trim();
-                            }
-
-                            for (i = 1; i < secondHalfSummary.length; i++) {
-                                var homeEventTime = secondHalfSummary[i].children[0].innerText.trim();
-
-                                var homeEventType = secondHalfSummary[i].children[1].querySelectorAll('img');
-                                if (homeEventType.length > 0)
-                                    homeEventType = homeEventType[0].title.trim();
-
-                                var homeEventPlayer = secondHalfSummary[i].children[2].innerText.trim();
-                                var awayEventTime = secondHalfSummary[i].children[5].innerText.trim();
-
-                                var awayEventType = secondHalfSummary[i].children[4].querySelectorAll('img');
-                                if (awayEventType.length > 0)
-                                    awayEventType = awayEventType[0].title.trim();
-
-                                var awayEventPlayer = secondHalfSummary[i].children[3].innerText.trim();
-
-                                result.GameData.Events.push({
-                                    TimeOfGame: 'Second-Half',
-                                    Time: (homeEventTime) ? homeEventTime : awayEventTime,
-                                    Type: (homeEventType) ? homeEventType : awayEventType,
-                                    Player: (homeEventPlayer) ? homeEventPlayer : awayEventPlayer
-                                });
-                            }
-
-
-
-
-
-                            var homeTeamLineup = $('table#team-lineups > tbody > tr > td > table > tbody')[0].children;
-                            var awayTeamLineup = $('table#team-lineups > tbody > tr > td > table > tbody')[1].children;
-
-                            for (i = 0; i < homeTeamLineup.length; i++) {
-                                result.GameData.HomeLineup.push({
-                                    Position: homeTeamLineup[i].children[0].innerText,
-                                    Nationality: homeTeamLineup[i].children[1].innerText,
-                                    Number: homeTeamLineup[i].children[2].innerText,
-                                    Name: homeTeamLineup[i].children[3].innerText
-                                });
-                            }
-
-                            for (i = 0; i < awayTeamLineup.length; i++) {
-                                result.GameData.AwayLineup.push({
-                                    Position: awayTeamLineup[i].children[3].innerText,
-                                    Nationality: awayTeamLineup[i].children[2].innerText,
-                                    Number: awayTeamLineup[i].children[1].innerText,
-                                    Name: awayTeamLineup[i].children[0].innerText
-                                });
-                            }
-
-
-                            return result;
-                        }, result)
-                        .then(function (result) {
-                            var resul = JSON.stringify(result);
-
-                            res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(resul);
-                            horseman.close();
-                        });
-
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(resul);
+                    horseman.close();
                 });
+
+            // .then(function (result) {
+            //     horseman
+            //         // .open(result.GameFileUrl)
+            //         .open('https://www.onlinebettingacademy.com/stats/match/portugal-stats/taa-de-portugal/estoril/cova-piedade/2366153/1/live')
+            //         .evaluate(function (result) {
+            //             result.GameData = {
+            //                 Events: [],
+            //                 HomeLineup: [],
+            //                 AwayLineup: []
+            //             };
+
+            //             // 1 index based (has title in 0)
+            //             var firstHalfSummary = $('table#first-half-summary > tbody > tr');
+            //             var secondHalfSummary = $('table#second-half-summary > tbody > tr');
+
+            //             for (i = 1; i < firstHalfSummary.length; i++) {
+            //                 var homeEventTime = firstHalfSummary[i].children[0].innerText.trim();
+
+            //                 var homeEventType = firstHalfSummary[i].children[1].querySelectorAll('img');
+            //                 if (homeEventType.length > 0)
+            //                     homeEventType = homeEventType[0].title.trim();
+
+            //                 var homeEventPlayer = firstHalfSummary[i].children[2].innerText.trim();
+            //                 var awayEventTime = firstHalfSummary[i].children[5].innerText.trim();
+
+            //                 var awayEventType = firstHalfSummary[i].children[4].querySelectorAll('img');
+            //                 if (awayEventType.length > 0)
+            //                     awayEventType = awayEventType[0].title.trim();
+
+
+            //                 var awayEventPlayer = firstHalfSummary[i].children[3].innerText.trim();
+            //             }
+
+            //             for (i = 1; i < secondHalfSummary.length; i++) {
+            //                 var homeEventTime = secondHalfSummary[i].children[0].innerText.trim();
+
+            //                 var homeEventType = secondHalfSummary[i].children[1].querySelectorAll('img');
+            //                 if (homeEventType.length > 0)
+            //                     homeEventType = homeEventType[0].title.trim();
+
+            //                 var homeEventPlayer = secondHalfSummary[i].children[2].innerText.trim();
+            //                 var awayEventTime = secondHalfSummary[i].children[5].innerText.trim();
+
+            //                 var awayEventType = secondHalfSummary[i].children[4].querySelectorAll('img');
+            //                 if (awayEventType.length > 0)
+            //                     awayEventType = awayEventType[0].title.trim();
+
+            //                 var awayEventPlayer = secondHalfSummary[i].children[3].innerText.trim();
+
+            //                 result.GameData.Events.push({
+            //                     TimeOfGame: 'Second-Half',
+            //                     Time: (homeEventTime) ? homeEventTime : awayEventTime,
+            //                     Type: (homeEventType) ? homeEventType : awayEventType,
+            //                     Player: (homeEventPlayer) ? homeEventPlayer : awayEventPlayer
+            //                 });
+            //             }
+
+
+
+
+
+            //             var homeTeamLineup = $('table#team-lineups > tbody > tr > td > table > tbody')[0].children;
+            //             var awayTeamLineup = $('table#team-lineups > tbody > tr > td > table > tbody')[1].children;
+
+            //             for (i = 0; i < homeTeamLineup.length; i++) {
+            //                 result.GameData.HomeLineup.push({
+            //                     Position: homeTeamLineup[i].children[0].innerText,
+            //                     Nationality: homeTeamLineup[i].children[1].innerText,
+            //                     Number: homeTeamLineup[i].children[2].innerText,
+            //                     Name: homeTeamLineup[i].children[3].innerText
+            //                 });
+            //             }
+
+            //             for (i = 0; i < awayTeamLineup.length; i++) {
+            //                 result.GameData.AwayLineup.push({
+            //                     Position: awayTeamLineup[i].children[3].innerText,
+            //                     Nationality: awayTeamLineup[i].children[2].innerText,
+            //                     Number: awayTeamLineup[i].children[1].innerText,
+            //                     Name: awayTeamLineup[i].children[0].innerText
+            //                 });
+            //             }
+
+
+            //             return result;
+            //         }, result)
+            //         .then(function (result) {
+            //             var resul = JSON.stringify(result);
+
+            //             res.writeHead(200, { 'Content-Type': 'application/json' });
+            //             res.end(resul);
+            //             horseman.close();
+            //         });
+
+            // });
         });
 });
 
