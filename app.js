@@ -913,10 +913,10 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                 .then(function (status) {
                     console.log('[' + status + '] ' + gameData.url);
                 })
-                .click('#click_show_results')
-                .click('#click_show_h2h_all')
-                .waitForSelector('div#todos_ultimos_resultados.loaded')
-                .waitForSelector('div#show_h2h_all.loaded')
+                // .click('#click_show_results')
+                // .click('#click_show_h2h_all')
+                // .waitForSelector('div#todos_ultimos_resultados.loaded')
+                // .waitForSelector('div#show_h2h_all.loaded')
                 .evaluate(function (gameInfo) {
                     var competition = gameInfo.competition;
                     var gameFileUrl = $('a#stat2link')[0].href;
@@ -924,17 +924,23 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                     var matchDate = date[0];
                     var matchHour = (date.length > 1) ? date[1] : null;
 
+
+
                     var steps = 0;
+steps++;
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
+steps++;
                     var gamesBetweenTeams = [];
                     var matches = $('#show_h2h_all > table.stat-cd3 > tbody > tr');
-
+steps++;
                     try {
-                        var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
+                        // var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
+                        var scoreTables = document.querySelectorAll('#ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
+steps++;
                         var homeScoresTable = scoreTables[0].querySelectorAll('tbody > tr');
                         var awayScoresTable = scoreTables[1].querySelectorAll('tbody > tr');
-
+steps++;
                         var homeScores = [];
                         var awayScores = [];
 
@@ -1000,7 +1006,7 @@ app.get('/v1/scrap/team/:team', function (req, res) {
                                 GamePermLink: match[0].innerText.trim().replace("-", "").replace("-", "").trim() + '-' + match[2].querySelector('a').innerText + '-' + match[4].innerText
                             };
                         }
-
+steps++;
                         var generalTable = [];
                         var homeTable = [];
                         var awayTable = [];
