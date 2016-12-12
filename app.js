@@ -1517,12 +1517,12 @@ steps++;
 
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(resul);
-                    horseman.close();
+                    
                 })
                 .catch(function (error) {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify(error));
-                    horseman.close();
+                    
                 });
 
             // .then(function (result) {
