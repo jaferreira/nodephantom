@@ -6,12 +6,25 @@
 <body>
 
 <h1>Status</h1>
-
-<ul>
-    <% games.forEach(function(game) { %>
-        <li>[<%= game.Scrapped %>] <%= game.gameId %></li>
-    <% }); %>
-</ul>
+<h3><%= games.length %> Games</h3>
+<table>
+    <thead>
+        <tr>
+            <th>GameId</th>
+            <th>Is Scrapped</th>
+            <th>Scrap Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% games.forEach(function(game) { %>
+        <tr>
+            <td><%= game.gameId %></td>
+            <td><%= game.Scrapped %></td>
+            <td><%= game.ScrapDate %></td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
 
 </script>
 </body>

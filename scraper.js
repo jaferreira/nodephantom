@@ -6,11 +6,19 @@ var _url = require("url");
 var app = express();
 var _data = require('./dataAccess');
 var http = require('http');
+var config = require('./config');
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
+
+
+var mongoose = require('mongoose');
+mongoose.connect(config.database);
+mongoose.connection.on('error', function () {
+  console.info('Error: Could not connect to MongoDB. Did you forget to run `mongod`?'.red);
+});
 
 var horseman = new Horseman({
     injectJquery: true,

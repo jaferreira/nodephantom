@@ -4,7 +4,7 @@ var mongoDbUrl = 'mongodb://localhost:27017/matches';
 var dbGetAllGames = function (db, callback) {
     var collection = db.collection('games');
 
-    collection.find().toArray(function (err, items) {
+    collection.find().sort({ ScrapDate: -1 }).toArray(function (err, items) {
         if (err) {
             reject(err);
         } else {
