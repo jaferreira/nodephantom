@@ -701,8 +701,8 @@ app.get('/scrap/team/:team', function (req, res) {
                         sport: businessData.sports[0].sportId,
                         competition: result.Competition.name,
 
-                        date: result.matchDate,
-                        hour: result.matchHour,
+                        date: result.MatchDate,
+                        hour: result.MatchHour,
 
                         homeTeam: result.HomeTeam,
                         awayTeam: result.AwayTeam,
