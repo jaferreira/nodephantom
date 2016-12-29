@@ -73,14 +73,18 @@ app.get('/scrap/team/:team', function (req, res) {
             }
         })
         .then(function (gameData) {
-            console.log('GD: ' + gameData);
+            
             if (gameData.isError) {
                 logError('Error on Horseman', gameData.errorInfo);
             }
 
+            console.log('Trying to find copetition: ' + gameData.competition);
+
             var comp = businessData.Competitions.find(function (c) {
                 return c.name === gameData.competition;
             });
+
+            console.log('Competicion found: ' + comp);
 
             gameInfo = {
                 url: gameData.url,
@@ -110,20 +114,20 @@ app.get('/scrap/team/:team', function (req, res) {
 
 
                     var steps = 0;
-                    steps++;
+
                     var homeTeam = $('td.stats-game-head-teamname')[0].querySelectorAll('a')[1].innerText.trim();
                     var awayTeam = $('td.stats-game-head-teamname')[1].querySelectorAll('a')[1].innerText.trim();
-                    steps++;
+
                     var gamesBetweenTeams = [];
                     var matches = $('#show_h2h_all > table.stat-cd3 > tbody > tr');
-                    steps++;
+
                     try {
                         var scoreTables = document.querySelectorAll('#todos_ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
                         // var scoreTables = document.querySelectorAll('#ultimos_resultados > table > tbody > tr')[1].querySelectorAll('.stat-last10.stat-half-padding');
-                        steps++;
+
                         var homeScoresTable = scoreTables[0].querySelectorAll('tbody > tr');
                         var awayScoresTable = scoreTables[1].querySelectorAll('tbody > tr');
-                        steps++;
+
                         var homeScores = [];
                         var awayScores = [];
 
@@ -189,18 +193,23 @@ app.get('/scrap/team/:team', function (req, res) {
                                 GamePermLink: match[0].innerText.trim().replace("-", "").replace("-", "").trim() + '-' + match[2].querySelector('a').innerText + '-' + match[4].innerText
                             };
                         }
-                        steps++;
+
+                        steps = 1;
+                        
+
+
                         var generalTable = [];
                         var homeTable = [];
                         var awayTable = [];
 
                         if (competition.type == 'DEFAULT') {
+                            steps = 50;
                             var classificationstable = $('.competition-rounds');
 
                             var total = classificationstable[0].querySelectorAll('tbody')[0].children;
                             var casa = classificationstable[1].querySelectorAll('tbody')[0].children;
                             var fora = classificationstable[2].querySelectorAll('tbody')[0].children;
-
+                            steps = 51;
                             for (i = 0; i < total.length; i++) {
                                 var gameData = total[i].children;
                                 var order = gameData[0].innerText.trim();
@@ -226,7 +235,7 @@ app.get('/scrap/team/:team', function (req, res) {
                                     IsAwayTeam: team.toLowerCase() == awayTeam.toLowerCase()
                                 };
                             }
-
+                            steps = 52;
                             for (i = 0; i < total.length; i++) {
                                 var gameData = casa[i].children;
 
@@ -255,7 +264,7 @@ app.get('/scrap/team/:team', function (req, res) {
 
 
                             }
-
+                            steps = 53;
                             for (i = 0; i < total.length; i++) {
                                 var gameData = fora[i].children;
 
@@ -285,7 +294,7 @@ app.get('/scrap/team/:team', function (req, res) {
                             }
                         }
 
-                        steps++;
+                        steps = 2;
 
                         // Course on Competition
                         var courseOnCompetition = {
@@ -296,7 +305,7 @@ app.get('/scrap/team/:team', function (req, res) {
                         };
 
                         if (competition.type == 'CHAMPIONS' || competition.type == 'TACA_LIGA' || competition.type == 'TACA_PT') {
-                            steps++;
+                            steps = 90;
                             var competitionHistoryTable = document.querySelectorAll('.comp-history > tbody');
                             var qualifyingGamesInfo = competitionHistoryTable[0].children[1];
                             var qualifyingGamesInfoHome = qualifyingGamesInfo.children[0].querySelectorAll('table');
@@ -326,7 +335,7 @@ app.get('/scrap/team/:team', function (req, res) {
 
                                 courseOnCompetition.qualifyingGames.push(qualificationGame);
                             }
-                            steps++;
+                            steps = 91;
                             for (j = 0; j < qualifyingGamesInfoAway.length; j++) {
 
                                 var qualificationGame = {
@@ -352,7 +361,7 @@ app.get('/scrap/team/:team', function (req, res) {
 
                                 courseOnCompetition.qualifyingGames.push(qualificationGame);
                             }
-                            steps++;
+                            steps = 92;
 
                             if (competitionHistoryTable[0].children.length > 2) {
 
@@ -383,7 +392,7 @@ app.get('/scrap/team/:team', function (req, res) {
                                     });
                                 }
                             }
-                            steps++;
+                            steps = 93;
 
                             if (competitionHistoryTable[0].children.length > 3) {
                                 var groupHistoryGames = competitionHistoryTable[0].children[3].querySelectorAll('table.comp-hist-round > tbody')[0].children;
@@ -406,7 +415,7 @@ app.get('/scrap/team/:team', function (req, res) {
                             }
                         }
 
-                        steps++;
+                        steps = 100;
                         var homeRoad = [];
                         var awayRoad = [];
 
@@ -670,6 +679,7 @@ app.get('/scrap/team/:team', function (req, res) {
 
                         }
 
+                        steps = 16;
                         return {
                             GameFileUrl: gameFileUrl,
                             MatchDate: matchDate,
@@ -693,13 +703,17 @@ app.get('/scrap/team/:team', function (req, res) {
                             AwayResultsAway: awayResultsAway,
                             CompetitionPath: courseOnCompetition
                         };
-                    } catch (err) { err.steps = steps; return err; }
+                    } catch (err) { err.steps = steps;  err.competition = competition; return err; }
                 }, gameInfo)
                 .then(function (result) {
 
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify(result));
+
                     var newGame = new gameModel({
                         sport: businessData.sports[0].sportId,
-                        competition: result.Competition.name,
+                        // competition: result.Competition.name,
 
                         date: result.MatchDate,
                         hour: result.MatchHour,
@@ -710,9 +724,9 @@ app.get('/scrap/team/:team', function (req, res) {
                         scrapped: false,
 
                         nextGameStats: {
+                            homeScores: result.HomeScores,
+                            awayScores: result.AwayScores,
                             gamesBetweenTeams: result.GamesBetweenTeams,
-                            homeScores: result.homeScores,
-                            awayScores: result.awayScores,
                             generalTable: result.GeneralTable,
                             homeTable: result.HomeTable,
                             awayTable: result.AwayTable,
@@ -731,6 +745,7 @@ app.get('/scrap/team/:team', function (req, res) {
                     horseman.close();
                     _horseman.close();
 
+                    console.log('Saving data...');
                     newGame.save(function (err) {
                         var ret = {};
                         if (err) {
@@ -740,8 +755,8 @@ app.get('/scrap/team/:team', function (req, res) {
                             ret = { data: result, result: 1 }
                         }
 
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify(ret));
+                        // res.writeHead(200, { 'Content-Type': 'application/json' });
+                        // res.end(JSON.stringify(ret));
                     });
                 });
             // .catch(function (error) {

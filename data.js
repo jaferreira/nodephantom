@@ -30,7 +30,7 @@ exports.sports = [
 
 exports.Competitions = [
     { competitionId: 1, name: 'Primeira Liga 16/17', type: COMPETITION_DEFAULT },
-    { competitionId: 2, name: 'Primeira Liga 16/17', type: COMPETITION_DEFAULT },
+    { competitionId: 2, name: 'Taça da Liga 16/17', type: COMPETITION_TACA_LIGA },
     { competitionId: 3, name: 'UEFA Champions League 16/17', type: COMPETITION_CHAMPIONS },
     { competitionId: 4, name: 'Taça de Portugal 16/17', type: COMPETITION_TACA_PT }
 ];
