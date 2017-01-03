@@ -109,7 +109,7 @@ app.get('/scrap/team/:team', function (req, res) {
             };
 
             console.log(JSON.stringify(gameInfo, null, 2));
-            var _horseman = new Horseman();
+            var _horseman = new Horseman({ignoreSSLErrors:true});
             _horseman
                 .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0")
 
