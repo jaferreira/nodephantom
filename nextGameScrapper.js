@@ -21,7 +21,24 @@ app.get('/', function (req, res) {
     res.render('index');
 });
 
-
+app.get('/scrap/google',function(req,res){
+    console.log('start');
+    var horseman = new Horseman();
+    horseman
+  .userAgent('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0')
+  .open('http://www.google.com')
+  .type('input[name="q"]', 'github')
+  .click('[name="btnK"]')
+  .keyboardEvent('keypress', 16777221)
+  .waitForSelector('div.g')
+  .count('div.g')
+  .log() // prints out the number of results
+  .then(function () {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+  })
+  .close();
+  
+});
 app.get('/scrap/team/:team', function (req, res) {
     var team = req.params.team;
     console.log(team);
