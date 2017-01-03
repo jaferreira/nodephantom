@@ -23,7 +23,7 @@ app.get('/', function (req, res) {
 
 app.get('/scrap/google',function(req,res){
     console.log('start');
-    var horseman = new Horseman();
+    var horseman = new Horseman({ignoreSSLErrors:true});
     horseman
   .userAgent('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0')
   .open('https://www.onlinebettingacademy.com/stats/team/portugal/chaves/1704')
@@ -47,7 +47,7 @@ app.get('/scrap/team/:team', function (req, res) {
 
     var gameInfo = null;
     var gameToScrap;
-    var horseman = new Horseman();
+    var horseman = new Horseman({ignoreSSLErrors:true});
     horseman
         .on('error', function (msg, trace) {
             console.log(msg, trace);
