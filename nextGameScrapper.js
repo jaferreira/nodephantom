@@ -26,7 +26,7 @@ app.get('/scrap/google',function(req,res){
     var horseman = new Horseman();
     horseman
   .userAgent('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0')
-  .open('http://www.google.com')
+  .open('https://www.onlinebettingacademy.com/stats/team/portugal/chaves/1704')
   .type('input[name="q"]', 'github')
   .click('[name="btnK"]')
   .keyboardEvent('keypress', 16777221)
@@ -819,4 +819,4 @@ app.get('/scrap/league/:league', function (req, res) {
 });
 
 app.use(express.static(path.resolve(__dirname, 'public')));
-app.listen(process.env.Port || 4001)
+app.listen(process.env.Port || 8080)
